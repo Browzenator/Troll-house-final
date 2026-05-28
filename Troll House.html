@@ -1,0 +1,988 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>$TrollHouse — The House That Trolls Back</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=VT323&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --sky-1:#7CC6EE;
+  --sky-2:#A9DCF2;
+  --sky-3:#CCEAF6;
+  --plaster:#d8cfc8;
+  --plaster-2:#cec5be;
+  --plaster-shadow:#c4baba;
+  --shingle:#161616;
+  --shingle-2:#262525;
+  --trim:#0e0e0e;
+  --wood:#7A4A2B;
+  --wood-dark:#4B2C16;
+  --door:#6E3A1F;
+  --door-dark:#421d09;
+  --brass:#E5B549;
+  --grass:#5FA64B;
+  --grass-2:#3F8233;
+  --brick:#7c3a2a;
+  --brick-mortar:#3a1f17;
+  --neon:#3DFF6A;
+  --neon-glow:#62ff84;
+  --ink:#141414;
+  --teal:#15B7AC;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"Inter",system-ui,sans-serif;
+  color:var(--ink);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  background:
+    linear-gradient(180deg,
+      var(--sky-1) 0%,
+      var(--sky-1) 14%,
+      var(--sky-2) 30%,
+      var(--sky-3) 55%,
+      var(--sky-3) 78%,
+      #b6d896 92%,
+      var(--grass) 100%);
+  min-height:100vh;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+.display{font-family:"Anton",Impact,sans-serif;font-weight:400;letter-spacing:.01em;line-height:.86}
+.mono{font-family:"VT323",ui-monospace,monospace;letter-spacing:.04em}
+
+/* ───────── SKY (sides + top) ───────── */
+.sky-art{
+  position:absolute;inset:0 0 auto 0;height:1600px;pointer-events:none;overflow:hidden;z-index:0;
+}
+.cloud{
+  position:absolute;background:#fff;border-radius:50%;opacity:.92;
+  filter:drop-shadow(0 4px 0 rgba(0,0,0,.06));
+}
+.cloud::before,.cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.cloud.c1{width:120px;height:46px;top:80px;left:6%}
+.cloud.c1::before{width:70px;height:70px;top:-30px;left:18px}
+.cloud.c1::after{width:50px;height:50px;top:-18px;right:14px}
+.cloud.c2{width:160px;height:54px;top:240px;right:5%}
+.cloud.c2::before{width:84px;height:84px;top:-40px;left:24px}
+.cloud.c2::after{width:60px;height:60px;top:-22px;right:18px}
+.cloud.c3{width:90px;height:32px;top:520px;left:3%;opacity:.85}
+.cloud.c3::before{width:54px;height:54px;top:-22px;left:10px}
+.cloud.c4{width:130px;height:46px;top:780px;right:3%;opacity:.85}
+.cloud.c4::before{width:74px;height:74px;top:-34px;left:18px}
+.cloud.c4::after{width:46px;height:46px;top:-12px;right:14px}
+.cloud.c5{width:110px;height:40px;top:1080px;left:7%;opacity:.7}
+.cloud.c5::before{width:60px;height:60px;top:-26px;left:14px}
+.cloud.c6{width:140px;height:48px;top:1380px;right:6%;opacity:.7}
+.cloud.c6::before{width:78px;height:78px;top:-34px;left:18px}
+.sun{
+  position:absolute;top:60px;right:14%;width:100px;height:100px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #fff7b8, #f4c24e 60%, #e09a2a);
+  box-shadow:0 0 70px rgba(244,194,78,.55), 0 0 130px rgba(244,194,78,.3);
+}
+@media (max-width:900px){ .sun{width:70px;height:70px;right:8%} }
+
+/* ───────── THE HOUSE ───────── */
+.house{
+  position:relative;
+  max-width:1040px;
+  margin:0 auto;
+  z-index:2;
+}
+
+/* GABLE: just the trollhead image as the front of the house. It already contains
+   the roof, the chimney, and the troll face. The wall below is the same width
+   so the roof tucks cleanly onto the wall without overhanging. */
+.gable{
+  position:relative;
+  padding:84px 0 0;
+  text-align:center;
+  margin-bottom:-24px; /* pull wall up under the chin curve */
+  z-index:4; /* sit on top of the wall */
+}
+.gable .face-img{
+  position:relative;
+  display:block;
+  width:140.4%;
+  max-width:none;
+  left:50%;
+  transform:translateX(-50%);
+  margin:0 auto; /* perfectly flush with the wall */
+  filter:drop-shadow(0 -4px 16px rgba(0,0,0,.15)); /* shadow upwards to hide crop line */
+  z-index:2;
+}
+
+/* TROLL / HOUSE word-banner painted in the sky on either side of the house */
+.banner-words{
+  position:absolute;
+  top:24px;left:0;right:0;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 max(24px, 3vw);
+  pointer-events:none;z-index:1;
+  max-width:1600px;margin:0 auto;
+}
+.banner-words span{
+  position:relative;z-index:2;
+  font-family:"Anton",Impact,sans-serif;
+  font-size:clamp(48px,8.5vw,128px);
+  line-height:.9;color:#fff;
+  letter-spacing:.02em;
+  text-shadow:
+    4px 4px 0 #111,
+    8px 8px 0 rgba(0,0,0,.18);
+  -webkit-text-stroke: 2px #111;
+}
+@media (max-width:900px){
+  .gable{padding-top:48px}
+  .banner-words{position:static;justify-content:center;gap:14px;padding:8px 0 0;margin-top:60px}
+  .banner-words span{font-size:clamp(40px,10vw,72px)}
+  .banner-words span:last-child{transform:none}
+}
+
+/* EAVES removed per user request */
+
+/* ───────── WALL (siding) ───────── */
+.wall{
+  position:relative;
+  background:
+    repeating-linear-gradient(180deg,
+      var(--plaster) 0 38px,
+      var(--plaster-shadow) 38px 39px,
+      var(--plaster) 39px 76px,
+      var(--plaster-2) 76px 77px),
+    var(--plaster);
+  border-left:6px solid var(--trim);
+  border-right:6px solid var(--trim);
+  z-index:3;
+  padding:80px 56px 48px;
+}
+.wall::before{
+  /* subtle vertical edge shadow */
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.15), transparent 6%, transparent 94%, rgba(0,0,0,.15));
+}
+
+/* ───────── HERO copy on the wall ───────── */
+.hero-wall{padding-top:120px;padding-bottom:40px;text-align:center;position:relative}
+.wood-beam{
+  position:absolute;top:0;left:0;right:0;height:40px;
+  background:linear-gradient(180deg, var(--wood), var(--wood-dark));
+  border-bottom:4px solid #111;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.2);
+}
+.address-plate{
+  display:inline-flex;align-items:center;gap:10px;
+  background:#101010;color:#e8e8e8;
+  border:3px solid #000;
+  padding:8px 14px;
+  font-family:"VT323",monospace;font-size:22px;line-height:1;
+  box-shadow:4px 4px 0 rgba(0,0,0,.35), inset 0 0 0 2px #2a2a2a;
+}
+.address-plate b{color:var(--neon);font-weight:400}
+.address-plate::before{
+  content:"";width:10px;height:10px;background:var(--neon);border-radius:50%;
+  box-shadow:0 0 12px var(--neon);
+}
+h1.headline{
+  margin:24px auto 20px;
+  font-family:"Anton",Impact,sans-serif;
+  font-size:clamp(48px,7.5vw,118px);
+  line-height:.96;text-transform:uppercase;color:#161616;
+  max-width:14ch;
+  text-shadow:
+    4px 4px 0 #fff,
+    8px 8px 0 #161616;
+}
+h1.headline .green{color:var(--neon);text-shadow:4px 4px 0 #0b3a18, 8px 8px 0 #fff}
+.hero-sub{
+  max-width:640px;margin:16px auto 0;
+  font-size:18px;line-height:1.55;font-weight:500;color:#222;
+}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:26px}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:14px;
+  padding:15px 22px;border:3px solid #111;
+  box-shadow:6px 6px 0 #111;
+  transition:transform .12s, box-shadow .12s;cursor:pointer;
+}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 #111}
+.btn:active{transform:translate(3px,3px);box-shadow:2px 2px 0 #111}
+.btn-primary{background:var(--neon);color:#062b10}
+.btn-dark{background:#111;color:#fafafa}
+.btn-light{background:#fff;color:#111}
+
+/* ───────── ADDRESS / CA PLATE — a metal plaque mounted on the wall ───────── */
+.ca-plate{
+  position:relative;margin:48px auto 8px;max-width:780px;
+  background:linear-gradient(180deg,#1c1c1c,#0a0a0a);
+  color:#eaffe5;border:3px solid #000;
+  padding:14px 18px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;
+  box-shadow:
+    inset 0 0 0 2px #2a2a2a,
+    0 12px 0 -4px rgba(0,0,0,.35),
+    0 24px 32px -20px rgba(0,0,0,.5);
+}
+.ca-plate::before,.ca-plate::after{
+  /* screws in corners */
+  content:"";position:absolute;width:10px;height:10px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#cfcfcf,#7e7e7e 60%,#3a3a3a);
+  box-shadow:inset 0 0 0 1px #000;
+}
+.ca-plate::before{top:6px;left:6px}
+.ca-plate::after{top:6px;right:6px}
+.ca-plate .corners{position:absolute;inset:0;pointer-events:none}
+.ca-plate .corners::before,.ca-plate .corners::after{
+  content:"";position:absolute;width:10px;height:10px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#cfcfcf,#7e7e7e 60%,#3a3a3a);
+  box-shadow:inset 0 0 0 1px #000;
+}
+.ca-plate .corners::before{bottom:6px;left:6px}
+.ca-plate .corners::after{bottom:6px;right:6px}
+.ca-label{
+  font-family:"VT323",monospace;color:var(--neon);font-size:20px;letter-spacing:.08em;
+  display:flex;align-items:center;gap:8px;
+}
+.ca-label::before{content:"";width:8px;height:8px;background:var(--neon);border-radius:50%;
+  box-shadow:0 0 10px var(--neon);animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{50%{opacity:.3}}
+.ca-value{flex:1;min-width:240px;background:#0a0a0a;border:1px solid #2a2a2a;padding:8px 12px;
+  font-family:"VT323",monospace;font-size:18px;color:#dfffe4;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.ca-copy{
+  background:var(--neon);color:#062b10;font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+  padding:11px 16px;border:2px solid #fff;cursor:pointer;transition:transform .12s;
+}
+.ca-copy:hover{transform:translateY(-2px)}
+.ca-copy.copied{background:#fff;color:#062b10}
+
+/* ───────── FLOOR divider — horizontal trim board between floors ───────── */
+.trim{
+  height:18px;background:linear-gradient(180deg,#1a1a1a,#0c0c0c);
+  border-top:2px solid #000;border-bottom:2px solid #000;
+  margin:0 -14px;
+}
+
+/* ───────── COMMUNITY FLOOR — new window ───────── */
+.community-floor{padding:64px 0 32px}
+.community-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center}
+.community-grid .about-copy{padding-left:12px}
+.community-grid .picture-window{margin-left:0;margin-right:12px}
+@media (max-width:900px){
+  .community-grid{grid-template-columns:1fr;gap:32px}
+  .community-grid .picture-window { grid-row: 1; margin: 0 auto; max-width: 480px; }
+  .community-grid .about-copy { padding: 0 22px; }
+}
+
+/* ───────── BALCONY FLOOR ───────── */
+.balcony-floor{padding:64px 0 80px}
+.balcony-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center}
+.balcony{
+  position:relative;
+  border:6px solid var(--trim);
+  background:#fff;
+  padding:10px;
+  box-shadow:inset 0 0 0 4px #f3eddd, 10px 10px 0 rgba(0,0,0,.18);
+  margin-left:12px;
+}
+.balcony-art{
+  display:block;width:100%;aspect-ratio:16/11;object-fit:cover;
+}
+.balcony::before{
+  content:"";position:absolute;left:10px;right:10px;top:50%;
+  height:6px;background:#1a1a1a;transform:translateY(-3px);
+  pointer-events:none;
+  box-shadow:0 -1px 0 rgba(255,255,255,.4), 0 1px 0 rgba(0,0,0,.3);
+}
+.balcony .sill{
+  position:absolute;left:-14px;right:-14px;bottom:-18px;height:18px;
+  background:linear-gradient(180deg,var(--wood),var(--wood-dark));
+  border:3px solid #000;
+}
+.balcony .sticker{
+  position:absolute;top:14px;left:14px;background:var(--neon);color:#062b10;
+  border:3px solid #000;font-family:"VT323",monospace;font-size:20px;line-height:1;
+  padding:6px 12px;transform:rotate(-3deg);box-shadow:4px 4px 0 #000;
+}
+.about-copy .section-kicker{
+  font-family:"VT323",monospace;font-size:22px;letter-spacing:.18em;
+  text-transform:uppercase;color:#3b3b3b;margin-bottom:8px;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.about-copy .section-kicker::before{content:">";color:var(--neon);text-shadow:0 0 8px var(--neon)}
+.about-copy h2{
+  font-family:"Anton",Impact,sans-serif;font-size:clamp(40px,5.6vw,76px);line-height:1.1;
+  text-transform:uppercase;margin:0 0 14px;
+}
+.about-copy h2 .accent{color:var(--teal)}
+.about-copy p{font-size:17px;line-height:1.6;font-weight:500;color:#1f1f1f;max-width:42ch}
+.about-copy p + p{margin-top:12px}
+.balcony-grid .about-copy { padding-right: 12px; }
+.pulls{margin-top:20px;display:flex;flex-wrap:wrap;gap:12px}
+.pull{
+  background:#fff;border:3px solid #111;padding:10px 14px;box-shadow:4px 4px 0 #111;
+  display:flex;align-items:baseline;gap:8px;
+}
+.pull b{font-family:"Anton",Impact,sans-serif;font-size:26px;line-height:1}
+.pull span{font-family:"VT323",monospace;font-size:16px;color:#444;letter-spacing:.08em;text-transform:uppercase}
+@media (max-width:900px){
+  .balcony-grid{grid-template-columns:1fr;gap:32px}
+  .balcony { margin: 0 auto; max-width: 480px; }
+  .about-copy { padding: 0 22px; text-align: center; }
+  .pulls { justify-content: center; }
+  .about-copy p { margin-left: auto; margin-right: auto; }
+}
+
+/* ───────── PICTURE WINDOW FLOOR — charity ───────── */
+.picture-floor{padding:0 0 80px;display:grid;grid-template-columns:1fr 1.1fr;gap:48px;align-items:center}
+.picture-window{
+  position:relative;
+  border:6px solid var(--trim);
+  background:#fff;
+  padding:10px;
+  box-shadow:inset 0 0 0 4px #f3eddd, 10px 10px 0 rgba(0,0,0,.18);
+  margin-left:12px;
+}
+.picture-window img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.picture-window::before{
+  content:"";position:absolute;left:10px;right:10px;top:50%;
+  height:6px;background:#1a1a1a;transform:translateY(-3px);
+  pointer-events:none;
+  box-shadow:0 -1px 0 rgba(255,255,255,.4), 0 1px 0 rgba(0,0,0,.3);
+}
+.picture-window .sill{
+  position:absolute;left:-14px;right:-14px;bottom:-18px;height:18px;
+  background:linear-gradient(180deg,var(--wood),var(--wood-dark));
+  border:3px solid #000;
+}
+.charity-copy h2{
+  font-family:"Anton",Impact,sans-serif;font-size:clamp(40px,5.6vw,76px);line-height:1.1;
+  text-transform:uppercase;margin:0 0 12px;
+}
+.charity-copy h2 .accent{color:#C26A3A}
+.charity-copy .section-kicker{
+  font-family:"VT323",monospace;font-size:22px;letter-spacing:.18em;
+  text-transform:uppercase;color:#3b3b3b;margin-bottom:8px;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.charity-copy .section-kicker::before{content:">";color:var(--neon)}
+.charity-copy p{font-size:17px;line-height:1.6;font-weight:500;color:#1f1f1f;max-width:46ch}
+.charity-copy { padding-right: 12px; }
+.heart-bar{margin-top:22px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.heart-bar .stat{background:#fff;border:3px solid #111;padding:12px 16px;box-shadow:5px 5px 0 #111}
+.heart-bar .stat b{display:block;font-family:"Anton",Impact,sans-serif;font-size:28px;line-height:1}
+.heart-bar .stat span{font-family:"VT323",monospace;font-size:16px;color:#444;letter-spacing:.08em;text-transform:uppercase}
+@media (max-width:900px){
+  .picture-floor{grid-template-columns:1fr;gap:32px}
+  .picture-window { margin: 0 auto; max-width: 480px; }
+  .charity-copy { padding: 0 22px; text-align: center; }
+  .heart-bar { justify-content: center; }
+  .charity-copy p { margin-left: auto; margin-right: auto; }
+}
+
+/* ───────── ENTRY FLOOR — steps + door ───────── */
+.entry-floor{padding:40px 0 0;position:relative}
+.entry-floor h2{
+  text-align:center;font-family:"Anton",Impact,sans-serif;font-size:clamp(40px,5.6vw,72px);
+  text-transform:uppercase;margin:0 0 6px;
+}
+.entry-floor .section-kicker{
+  text-align:center;font-family:"VT323",monospace;font-size:22px;letter-spacing:.18em;
+  text-transform:uppercase;color:#444;margin-bottom:28px;
+}
+.entry-grid{
+  display:grid;grid-template-columns:1fr 1.1fr;gap:36px;align-items:center;
+}
+@media (max-width:900px){.entry-grid{grid-template-columns:1fr}}
+.steps{display:flex;flex-direction:column;gap:20px}
+.step{
+  position:relative;
+  display:flex;align-items:center;gap:18px;
+  background:linear-gradient(180deg, #d9dfdf 0%, #aab2b2 100%);
+  border:4px solid #1a1a1a;
+  border-radius:8px 8px 4px 4px;
+  padding:24px 20px 20px;
+  box-shadow:
+    inset 0 16px 0 rgba(255,255,255,.5),
+    inset 0 -8px 0 rgba(0,0,0,.15),
+    6px 6px 0 rgba(0,0,0,.2);
+}
+.step::before {
+  content:"";position:absolute;top:10px;left:24px;right:24px;height:6px;
+  background:#111;border-radius:4px;box-shadow:0 1px 0 rgba(255,255,255,.5);
+}
+.step::after {
+  content:"";position:absolute;right:-12px;top:12px;width:12px;height:28px;
+  background:#e63946;border:3px solid #1a1a1a;border-radius:4px 4px 0 0;
+  z-index:-1;transform:rotate(12deg);transform-origin:bottom left;
+  box-shadow:2px 2px 0 rgba(0,0,0,.2);
+}
+.step .num{
+  width:50px;height:38px;flex:none;display:inline-flex;align-items:center;justify-content:center;
+  background:#1a1a1a;color:var(--neon);border:2px solid #555;
+  border-radius:4px;
+  font-family:"VT323",monospace;font-size:26px;line-height:1;
+  box-shadow:inset 0 0 6px #000, 2px 2px 0 rgba(0,0,0,.2);
+}
+.step h3{
+  font-family:"Anton",Impact,sans-serif;font-size:24px;margin:0 0 4px;
+  color:#111;text-transform:uppercase;letter-spacing:.02em;
+}
+.step p{
+  font-size:15px;line-height:1.45;color:#222;font-weight:600;margin:0;
+}
+
+/* THE DOOR */
+.door-frame{
+  position:relative;
+  width:100%;max-width:340px;margin:0 auto;
+  padding:14px 14px 0;
+  background:linear-gradient(180deg,#2a2a2a,#161616);
+  border:4px solid #000;border-bottom:none;
+}
+.door{
+  position:relative;
+  aspect-ratio: 1/1.85;
+  background:
+    /* wood grain */
+    repeating-linear-gradient(180deg, rgba(0,0,0,.15) 0 2px, transparent 2px 14px),
+    linear-gradient(180deg, var(--door) 0%, var(--door-dark) 100%);
+  border:5px solid #1a0d05;
+  box-shadow:
+    inset 0 0 0 3px #2c1407,
+    inset 0 0 0 10px var(--door),
+    inset 0 0 0 13px #2c1407,
+    inset 0 -8px 0 rgba(0,0,0,.25),
+    8px 8px 0 rgba(0,0,0,.25);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:36px 18px 56px;
+  color:#fff7d8;
+  font-family:"Anton",Impact,sans-serif;
+  text-transform:uppercase;letter-spacing:.04em;
+  cursor:pointer;
+  transition:transform .15s, box-shadow .15s;
+  text-align:center;
+}
+.door:hover{transform:translate(-2px,-2px);box-shadow:10px 10px 0 rgba(0,0,0,.3)}
+.door:active{transform:translate(2px,2px);box-shadow:4px 4px 0 rgba(0,0,0,.3)}
+.door .panel-top,.door .panel-bottom{
+  position:absolute;left:32px;right:32px;
+  background:rgba(0,0,0,.18);
+  border:2px solid #2c1407;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.06);
+  pointer-events:none;
+}
+.door .panel-top{top:14%;height:22%}
+.door .panel-bottom{bottom:14%;height:22%}
+.door .label{
+  position:relative;z-index:3;
+  font-size:34px;line-height:.95;color:#fff8d2;
+  text-shadow:0 2px 0 #1a0d05;
+  background:#5a3118;
+  border:3px solid #1a0d05;
+  padding:14px 16px;
+  box-shadow:4px 4px 0 rgba(0,0,0,.6);
+  transform:rotate(-1.5deg);
+  margin-top:24px;
+}
+.door .label::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 32px;
+  border: 3px solid #1a1a1a;
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  z-index: -1;
+}
+.door .label::after {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 26px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  background: #111;
+  border-radius: 50%;
+  box-shadow: 0 2px 0 rgba(255,255,255,.2);
+  z-index: 1;
+}
+.door .label .small{display:block;font-size:14px;letter-spacing:.18em;color:#f4c24e;margin-top:6px}
+.door .knob{
+  position:absolute;right:22px;top:50%;transform:translateY(-50%);
+  width:14px;height:14px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #ffe48a, var(--brass) 60%, #8a6320);
+  box-shadow:0 0 0 3px #2c1407, 0 0 0 5px var(--brass);
+  z-index:3;
+}
+/* doormat */
+.mat{
+  position:relative;max-width:380px;margin:-2px auto 0;
+  height:36px;background:#7a4a2b;border:3px solid #1a0d05;
+  display:flex;align-items:center;justify-content:center;
+  font-family:"VT323",monospace;font-size:22px;color:#fff8d2;letter-spacing:.4em;
+  box-shadow:inset 0 0 0 2px #4a2a14, 0 6px 0 #4a2a14;
+}
+.mat::before{
+  content:"";position:absolute;inset:4px;
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 4px, transparent 4px 8px),
+    repeating-linear-gradient(-45deg, rgba(0,0,0,.06) 0 4px, transparent 4px 8px);
+}
+
+/* steps below the door / bottom of entry */
+.stoop{
+  height:38px;margin:34px -14px 0;
+  background:linear-gradient(180deg,#cfcfcf,#9c9c9c);
+  border-top:4px solid #1a1a1a;border-bottom:4px solid #1a1a1a;
+}
+
+/* ───────── FOUNDATION (brick footer) ───────── */
+.foundation{
+  position:relative;
+  background:var(--brick);
+  border-left:6px solid var(--trim);
+  border-right:6px solid var(--trim);
+  color:#fff;
+  padding:64px 56px 36px;
+  z-index:3;
+  overflow:hidden;
+}
+.foundation::before{
+  /* horizontal mortar lines */
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(180deg,
+    transparent 0 36px,
+    var(--brick-mortar) 36px 40px);
+  opacity:.9;
+}
+.foundation::after{
+  /* vertical mortar with running-bond offset */
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    repeating-linear-gradient(90deg,
+      transparent 0 78px,
+      var(--brick-mortar) 78px 82px);
+  -webkit-mask:repeating-linear-gradient(180deg,
+    #000 0 36px,
+    transparent 36px 40px,
+    transparent 40px 76px,
+    #000 76px 80px);
+          mask:repeating-linear-gradient(180deg,
+    #000 0 36px,
+    transparent 36px 40px,
+    transparent 40px 76px,
+    #000 76px 80px);
+  opacity:.9;
+}
+.foundation > *{position:relative;z-index:2}
+.foot-grid{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:36px;
+}
+.foot-brand{display:flex;flex-direction:column;gap:10px}
+.foot-brand .logo-row{display:flex;align-items:center;gap:12px}
+.foot-brand .logo-row .head{width:54px;height:54px;background:url("assets/troll-head.png") center/cover no-repeat;border-radius:50%;background-color:#fff;border:3px solid #111;flex:none}
+.foot-brand .logo-row b{font-family:"VT323",monospace;font-size:30px;color:#fff;text-shadow:0 0 18px rgba(61,255,106,.45)}
+.foot-brand .logo-row b i{font-style:normal;color:var(--neon)}
+.foot-brand p{color:#fde9c8;font-size:14px;line-height:1.55;max-width:340px;margin:6px 0 0}
+.foot h4{
+  font-family:"VT323",monospace;font-size:22px;color:var(--neon);
+  letter-spacing:.15em;text-transform:uppercase;margin:0 0 12px;
+}
+.foot ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.foot a{color:#fde9c8;font-size:15px}
+.foot a:hover{color:var(--neon)}
+.foot-bottom{
+  max-width:1100px;margin:32px auto 0;border-top:1px solid rgba(255,255,255,.18);padding-top:16px;
+  display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+  font-family:"VT323",monospace;font-size:18px;color:#fde9c8;letter-spacing:.06em;
+}
+.socials{display:flex;gap:8px}
+.socials a{
+  width:42px;height:42px;border:2px solid #1a0d05;background:#101010;
+  display:inline-flex;align-items:center;justify-content:center;color:#fde9c8;transition:.15s;
+}
+.socials a:hover{background:var(--neon);color:#062b10;border-color:var(--neon)}
+.socials svg{width:18px;height:18px;fill:currentColor}
+
+/* removed grass and sidewalk */
+
+/* ───────── FLOATING NAV (top fixed nav, like address-numbered postbox) ───────── */
+.top-nav{
+  position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:50;
+  display:flex;align-items:center;
+  background:rgba(20,20,20,.86);backdrop-filter:blur(8px);
+  border:2px solid #000;
+  padding:8px 12px;
+  box-shadow:4px 4px 0 rgba(0,0,0,.3);
+}
+.top-nav .logo{width:34px;height:34px;background:url("assets/troll-head.png") center/cover no-repeat;background-color:#fff;border:2px solid #fff;border-radius:50%;flex:none;margin-right:14px}
+.top-nav .name{font-family:"VT323",monospace;font-size:22px;color:#fff;letter-spacing:.04em;white-space:nowrap;margin-right:22px}
+.top-nav .name i{font-style:normal;color:var(--neon)}
+.top-nav nav{display:flex}
+.top-nav nav a{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#cfcfcf;padding:8px 10px;transition:.12s;white-space:nowrap}
+.top-nav nav a:hover{color:var(--neon)}
+.top-nav .buy{margin-left:14px}
+.top-nav .buy{
+  background:var(--neon);color:#062b10;font-size:12px;font-weight:800;
+  letter-spacing:.1em;text-transform:uppercase;padding:9px 12px;border:2px solid #062b10;
+}
+@media (max-width:700px){.top-nav nav{display:none}}
+
+/* marquee mounted on wall */
+.marquee-wall {
+  padding-top: 24px;
+  padding-bottom: 32px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.marquee{
+  background:#111;
+  border:4px solid var(--trim);
+  padding:8px;
+  box-shadow:8px 8px 0 rgba(0,0,0,.2), inset 0 0 0 4px #2a2a2a;
+  position:relative;
+  z-index:2;
+}
+.marquee-screen{
+  background:#041f0b;
+  color:var(--neon);
+  overflow:hidden;
+  padding:12px 0;
+  border:2px solid #000;
+  box-shadow:inset 0 0 16px rgba(0,0,0,.8);
+  font-family:"VT323",monospace;
+  font-size:28px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.marquee-track{display:inline-flex;white-space:nowrap;gap:34px;animation:marquee 32s linear infinite;text-shadow:0 0 10px rgba(61,255,106,.6)}
+.marquee-track span{display:inline-flex;align-items:center;gap:24px}
+.marquee-track span::after{content:"✶";color:#165f2a;text-shadow:none}
+@keyframes marquee{ to { transform:translateX(-50%) } }
+
+/* Hanging signs inside windows */
+.hanging-sign{
+  position:relative;
+  background:#fdfbf5;
+  border:3px solid #1a1a1a;
+  box-shadow:4px 4px 0 rgba(0,0,0,.2);
+  padding:14px 6px;
+  margin:28px auto 14px;
+  width:90%;
+  transform:rotate(-1deg);
+  z-index:3;
+  transition:transform .3s cubic-bezier(.34, 1.56, .64, 1), box-shadow .2s, background .3s, border-color .3s;
+}
+.win:hover .hanging-sign{
+  transform:rotate(2deg) translateY(-4px);
+}
+.hanging-sign::before, .hanging-sign::after{
+  content:"";
+  position:absolute;
+  bottom:100%;
+  width:3px;
+  background:repeating-linear-gradient(180deg, #222 0 3px, #555 3px 6px);
+  border-left:1px solid #000;
+  border-right:1px solid #000;
+}
+.hanging-sign::before{left:15%;height:30px;transform:rotate(-2deg);transform-origin:bottom}
+.hanging-sign::after{right:15%;height:26px;transform:rotate(1deg);transform-origin:bottom}
+
+.win:hover .hanging-sign{
+  background:#0a4f28;
+  border-color:#06371b;
+  box-shadow:0 0 24px rgba(61,255,106,.5), 4px 4px 0 rgba(0,0,0,.4);
+}
+
+/* smaller screens: relax padding */
+@media (max-width:900px){
+  .wall{padding:36px 22px}
+  .foundation{padding:54px 22px 28px}
+  .trim, .stoop{margin-left:-12px;margin-right:-12px}
+  .marquee{margin-left:0;margin-right:0}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:24px}
+}
+@media (max-width:540px){
+  .wall{padding:28px 18px}
+  .trim, .stoop{margin-left:-10px;margin-right:-10px}
+  .marquee{margin-left:0;margin-right:0}
+  .foundation{padding:48px 18px 24px}
+  .foot-grid{grid-template-columns:1fr}
+  h1.headline{text-shadow:3px 3px 0 #fff,6px 6px 0 #161616}
+}
+</style>
+</head>
+<body>
+
+<!-- Floating address-plate nav -->
+<div class="top-nav" role="navigation" aria-label="primary">
+  <a href="#top" class="logo" aria-label="$TrollHouse home"></a>
+  <span class="name">$<i>TrollHouse</i></span>
+  <nav>
+    <a href="#community">Community</a>
+    <a href="#about">About</a>
+    <a href="#charity">Charity</a>
+    <a href="#buy">Buy</a>
+  </nav>
+  <a class="buy" href="https://dexscreener.com/solana/gzqbdnkgxxf4tkmw92q831hcrbrvrhoxr8s3ci2rvhbl" target="_blank" rel="noopener">Chart</a>
+</div>
+
+<!-- Sky on the sides -->
+<div class="sky-art" aria-hidden="true">
+  <div class="sun"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+  <div class="cloud c4"></div>
+  <div class="cloud c5"></div>
+  <div class="cloud c6"></div>
+</div>
+
+<!-- ───────── THE HOUSE ───────── -->
+<!-- TROLL / HOUSE wordmark painted in the sky on either side of the house -->
+<div class="banner-words" aria-hidden="true"><span>TROLL</span><span>HOUSE</span></div>
+
+<main class="house" id="top">
+
+  <!-- GABLE: the trollhead is the front of the house — roof, chimney, face baked in -->
+  <header class="gable" data-screen-label="00 Gable">
+    <img class="face-img" src="assets/house-troll-3d.png" alt="Trollhouse — the house with a 3D troll-face gable"/>
+  </header>
+
+  <!-- EAVES removed -->
+
+  <!-- WALL: hero copy painted on the upper wall -->
+  <section class="wall hero-wall" data-screen-label="01 Hero">
+    <div class="wood-beam" aria-hidden="true"></div>
+    <span class="address-plate"><b>LIVE</b>· Solana · CA verified</span>
+    <h1 class="headline display">The House<br/>That <span class="green">Trolls</span> Back.</h1>
+    <p class="hero-sub">A muscle-bound, chimney-smoking memecoin with a forwarding address. Every swap fee gets walked next door to a real charity. Knock once and come inside.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="https://dexscreener.com/solana/gzqbdnkgxxf4tkmw92q831hcrbrvrhoxr8s3ci2rvhbl" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2 12 L6 6 L10 14 L14 4 L18 11 L22 8 L22 20 L2 20 Z"/></svg>
+        Buy on Dex
+      </a>
+      <a class="btn btn-dark" href="https://x.com/Troll_House_Sol" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.81l-4.78-6.27L4.8 22H2l7.07-8.07L1.7 2h6.92l4.36 5.78L18.24 2Zm-1.2 18h1.66L7.04 4h-1.7l11.7 16Z"/></svg>
+        Follow on X
+      </a>
+      <a class="btn btn-light" href="#charity">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10Z"/></svg>
+        Meet the Charity
+      </a>
+    </div>
+
+    <!-- CA plate mounted on the wall -->
+    <div class="ca-plate" aria-label="Contract address">
+      <span class="corners" aria-hidden="true"></span>
+      <span class="ca-label">CONTRACT</span>
+      <span class="ca-value mono" id="ca-value" title="Tap to copy">FESx6q1owjzTqaysjSkcaJRBKvNAcE6TEwSuaY65pump</span>
+      <button class="ca-copy" id="ca-copy">Copy CA</button>
+    </div>
+  </section>
+
+  <!-- Marquee mounted on the wall -->
+  <section class="wall marquee-wall" aria-hidden="true">
+    <div class="marquee">
+      <div class="marquee-screen">
+        <div class="marquee-track">
+          <span>WELCOME TO THE NEIGHBORHOOD</span><span>FEES → CHARITY</span><span>$TROLLHOUSE ON SOLANA</span><span>BUILT DIFFERENT</span><span>WELCOME TO THE NEIGHBORHOOD</span><span>FEES → CHARITY</span><span>$TROLLHOUSE ON SOLANA</span><span>BUILT DIFFERENT</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMUNITY FLOOR -->
+  <section class="wall community-floor" id="community" data-screen-label="02 Community">
+    <div class="community-grid">
+      <div class="about-copy">
+        <div class="section-kicker">Take my hand, anon</div>
+        <h2>A community<br/>built on <span class="accent" style="color:#ff3d6a">CHADS.</span></h2>
+        <p>No VC dumping. No shadowy devs pulling the rug. Just pure, unadulterated meme energy powering the strongest neighborhood on Solana.</p>
+        <p>We're not just holding bags, we're holding the damn foundation. Grab a brick, get in the trenches, and let's build this house to the moon.</p>
+        <div class="pulls">
+          <div class="pull"><b>100%</b><span>Community Owned</span></div>
+          <div class="pull"><b>∞</b><span>Meme Potential</span></div>
+        </div>
+      </div>
+      <div class="picture-window">
+        <img src="assets/troll-hand.jpg" alt="Troll house reaching out a hand"/>
+        <div class="sill" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="trim" aria-hidden="true"></div>
+
+  <!-- BALCONY FLOOR — About -->
+  <section class="wall balcony-floor" id="about" data-screen-label="03 About">
+    <div class="balcony-grid">
+      <div class="balcony">
+        <img class="balcony-art" src="assets/troll-balcony.jpg" alt="Trollhouse sipping coffee on the balcony"/>
+        <div class="sill" aria-hidden="true"></div>
+        <div class="sticker">gm anon ☕</div>
+      </div>
+      <div class="about-copy">
+        <div class="section-kicker">Out on the balcony</div>
+        <h2>A token with<br/><span class="accent">curb appeal.</span></h2>
+        <p>$TrollHouse isn't another faceless ticker — he's a six-foot character with a roof for a head, a grin that won't quit, and a permanent address on Solana. He lifts. He sips. He trolls the floor.</p>
+        <p>Buying $TRH isn't renting hype. You're moving in.</p>
+        <div class="pulls">
+          <div class="pull"><b>0%</b><span>Team tax</span></div>
+          <div class="pull"><b>100%</b><span>Vibes</span></div>
+          <div class="pull"><b>1</b><span>House, not a hut</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="trim" aria-hidden="true"></div>
+
+  <!-- PICTURE WINDOW FLOOR — Charity -->
+  <section class="wall picture-floor" id="charity" data-screen-label="04 Charity">
+    <div class="picture-window">
+      <img src="assets/troll-meditate.jpg" alt="Trollhouse meditating on a mountain peak at sunrise"/>
+      <div class="sill" aria-hidden="true"></div>
+    </div>
+    <div class="charity-copy">
+      <div class="section-kicker">Fees → real impact</div>
+      <h2>A home for our<br/><span class="accent">four-legged friends.</span></h2>
+      <p>100% of the trading-fee tithe flows directly to <b>TTHAS.org</b> — The Troll House Animal Sanctuary, a 501(c)3 non-profit farm animal sanctuary located in Williamstown, NJ.</p>
+      <p>The bigger this house gets, the more farm animals we can help rescue, feed, and shelter.</p>
+      <div class="heart-bar">
+        <div class="stat"><b>100%</b><span>Of fees donated</span></div>
+        <div class="stat"><b>Live</b><span>On-chain trail</span></div>
+        <a class="btn btn-dark" href="https://tthas.org/" target="_blank" rel="noopener">
+          Visit TTHAS.org
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h12M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="trim" aria-hidden="true"></div>
+
+  <!-- ENTRY FLOOR — Buy CTA + How to buy -->
+  <section class="wall entry-floor" id="buy" data-screen-label="05 Entry">
+    <div class="section-kicker" style="display:block">Move-in instructions</div>
+    <h2>Four steps. One front door.</h2>
+    <div class="entry-grid">
+      <div class="steps">
+        <div class="step"><span class="num">01</span><div><h3>Grab a wallet</h3><p>Install Phantom, Solflare, or Backpack. Fund it with SOL — that's your moving truck.</p></div></div>
+        <div class="step"><span class="num">02</span><div><h3>Open a Dex</h3><p>Head to Jupiter or Raydium and connect your wallet at the welcome mat.</p></div></div>
+        <div class="step"><span class="num">03</span><div><h3>Paste the CA</h3><p>Drop the contract into the swap box. Verify the troll face is grinning back.</p></div></div>
+        <div class="step"><span class="num">04</span><div><h3>Move in</h3><p>Swap your SOL for $TRH and hang the keys on the hook. Welcome home, anon.</p></div></div>
+      </div>
+
+      <div>
+        <div class="door-frame">
+          <a class="door" href="https://dexscreener.com/solana/gzqbdnkgxxf4tkmw92q831hcrbrvrhoxr8s3ci2rvhbl" target="_blank" rel="noopener" aria-label="Buy $TrollHouse on DexScreener">
+            <span class="panel-top" aria-hidden="true"></span>
+            <span class="panel-bottom" aria-hidden="true"></span>
+            <span class="knob" aria-hidden="true"></span>
+            <span class="label">BUY<br/>$TROLLHOUSE<span class="small">on Solana</span></span>
+          </a>
+        </div>
+        <div class="mat" aria-hidden="true">WELCOME</div>
+      </div>
+    </div>
+    <div class="stoop" aria-hidden="true"></div>
+  </section>
+
+  <!-- FOUNDATION / Footer (brick) -->
+  <footer class="foundation" data-screen-label="06 Foundation">
+    <div class="foot-grid">
+      <div class="foot foot-brand">
+        <div class="logo-row">
+          <span class="head" aria-hidden="true"></span>
+          <b>$<i>TrollHouse</i></b>
+        </div>
+        <p>A memecoin with a forwarding address. Built on Solana, framed for the long haul, donating fees to TTHAS along the way.</p>
+      </div>
+      <div class="foot">
+        <h4>Trade</h4>
+        <ul>
+          <li><a href="https://dexscreener.com/solana/gzqbdnkgxxf4tkmw92q831hcrbrvrhoxr8s3ci2rvhbl" target="_blank" rel="noopener">DexScreener</a></li>
+          <li><a href="https://jup.ag/" target="_blank" rel="noopener">Jupiter Swap</a></li>
+          <li><a href="#community">Community</a></li>
+        </ul>
+      </div>
+      <div class="foot">
+        <h4>House</h4>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#charity">Charity</a></li>
+          <li><a href="#buy">How to buy</a></li>
+        </ul>
+      </div>
+      <div class="foot">
+        <h4>Find us</h4>
+        <ul>
+          <li><a href="https://x.com/Troll_House_Sol" target="_blank" rel="noopener">X / @Troll_House_Sol</a></li>
+          <li><a href="https://tthas.org/" target="_blank" rel="noopener">tthas.org</a></li>
+          <li><a href="#" id="copy-ca-foot">Copy contract</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© 2026 $TROLLHOUSE · NOT FINANCIAL ADVICE · DYOR</div>
+      <div class="socials">
+        <a href="https://x.com/Troll_House_Sol" target="_blank" rel="noopener" aria-label="X / Twitter">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.81l-4.78-6.27L4.8 22H2l7.07-8.07L1.7 2h6.92l4.36 5.78L18.24 2Zm-1.2 18h1.66L7.04 4h-1.7l11.7 16Z"/></svg>
+        </a>
+        <a href="https://dexscreener.com/solana/gzqbdnkgxxf4tkmw92q831hcrbrvrhoxr8s3ci2rvhbl" target="_blank" rel="noopener" aria-label="DexScreener">
+          <svg viewBox="0 0 24 24"><path d="M3 17 L9 11 L13 15 L21 7 L21 12 L13 19 L9 15 L3 21 Z"/></svg>
+        </a>
+        <a href="https://tthas.org/" target="_blank" rel="noopener" aria-label="TTHAS">
+          <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10Z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+</main>
+
+
+
+<script>
+  const CA = "FESx6q1owjzTqaysjSkcaJRBKvNAcE6TEwSuaY65pump";
+  const btn = document.getElementById('ca-copy');
+  const val = document.getElementById('ca-value');
+  function flash(el, label){
+    const o = el.textContent;
+    el.textContent = label;
+    el.classList.add('copied');
+    setTimeout(()=>{ el.textContent = o; el.classList.remove('copied'); }, 1500);
+  }
+  function copyCA(el){
+    navigator.clipboard?.writeText(CA);
+    flash(el, "Copied ✓");
+  }
+  btn?.addEventListener('click', ()=>copyCA(btn));
+  val?.addEventListener('click', ()=>copyCA(btn));
+  document.getElementById('copy-ca-foot')?.addEventListener('click', e=>{
+    e.preventDefault();
+    navigator.clipboard?.writeText(CA);
+    flash(e.currentTarget, "Copied ✓");
+  });
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click', e=>{
+      const id = a.getAttribute('href');
+      if(id.length<2) return;
+      const t = document.querySelector(id);
+      if(t){ e.preventDefault(); window.scrollTo({top:t.offsetTop-20, behavior:'smooth'}); }
+    });
+  });
+</script>
+</body>
+</html>
